@@ -1,0 +1,19 @@
+{
+  "name": "tedtalkjs",
+  "version": "1.0.0",
+  "description": "tool to ace difficult presentations and capture hearts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/notTGY/tedtalkjs.git"
+  },
+  "author": "notTGY",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/notTGY/tedtalkjs/issues"
+  },
+  "homepage": "https://github.com/notTGY/tedtalkjs#readme"
+}
