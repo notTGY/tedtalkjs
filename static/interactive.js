@@ -1,4 +1,4 @@
-const DB_CLICK_TIMEOUT = 200
+const DB_CLICK_TIMEOUT = 300
 
 const updateTransitions = (prev, next) => {
   let clickTimeout = 0

@@ -1,5 +1,3 @@
-fetch('./test.json').then(res => res.json()).then(loadPresentation)
-
 function loadPresentation(data) {
   console.log('data: ', data)
   const displaySlide = (n) => {
@@ -24,4 +22,8 @@ function loadPresentation(data) {
   }
 
   displaySlide(0)
+}
+
+onclick = e => {
+  document.querySelector('main').requestFullscreen()
 }

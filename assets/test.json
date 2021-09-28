@@ -1,0 +1,26 @@
+[
+  {
+    "author": "notTGY",
+    "h": "size matters"
+  },
+  [
+    "reasons to minify",
+    "* load speed",
+    "* code readability",
+    "",
+    "reasons against",
+    "* it is hard"
+  ],
+  {
+    "h": "minified vs excess",
+    "img": "../assets/einstain.jfif",
+    "img2": "../assets/ts.png"
+  },
+  [
+    "Javascript is the most powerful language out there"
+  ],
+  {
+    "img": "../assets/levin.jpg"
+  },
+  "qs?"
+]
