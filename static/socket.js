@@ -29,7 +29,7 @@ function initControl(roomId) {
   socket.on('control-connected', () => {
     socket.emit('presentation-start', `${DOMAIN}/assets/test.json`)
 
-    onkeydown = onclick = e => {
+    const fn = e => {
       if (clickTimeout) {
         clearTimeout(clickTimeout)
         clickTimeout = 0
@@ -44,6 +44,10 @@ function initControl(roomId) {
         )
       }
     }
+
+    document.body.addEventListener('keydown', fn)
+    document.body.addEventListener('click', fn)
+    document.body.addEventListener('touchstart', fn)
   })
 
   socket.emit('control-connected', roomId)
