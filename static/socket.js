@@ -1,59 +1,69 @@
-const SIZE = 300
-
-function init() {
-  if (document.location.hash !== '')
-    initControl()
-  else
-    initPresentation()
-}
-
-init()
-
+if (document.location.hash !== '')
+  initControl(document.location.hash.substring(1))
+else
+  initPresentation()
 
 function initPresentation() {
-  console.log('init presentation')
-  const socket = io("localhost:3000")
+  const socket = io()
 
-  socket.on('qr-created', (qr) => {
-    console.log(qr)
+  socket.on('qr-created', (qr, id) => {
+    console.log(id)
     displayQr(qr)
   })
 
-  socket.on('start-presentation', () => {
-    fetch('../assets/test.json')
+  socket.on('presentation-start', (jsonPath) => {
+    fetch(jsonPath)
       .then(res => res.json()).then(loadPresentation)
   })
+
+  socket.on('go-to-next', () => goToNext())
+  socket.on('go-to-prev', () => goToPrev())
 
   socket.emit('create-qr')
 }
 
-function initControl() {
-  console.log('init control')
-  const socket = io("localhost:3000")
+let clickTimeout = 0
+function initControl(roomId) {
+  const socket = io()
 
-  socket.emit('start-presentation')
+  socket.on('control-connected', () => {
+    socket.emit('presentation-start', `${DOMAIN}/assets/test.json`)
+
+    onkeydown = onclick = e => {
+      if (clickTimeout) {
+        clearTimeout(clickTimeout)
+        clickTimeout = 0
+        socket.emit('go-to-prev')
+      } else {
+        clickTimeout = setTimeout(
+          e => {
+            socket.emit('go-to-next')
+            clickTimeout = 0
+          },
+          300
+        )
+      }
+    }
+  })
+
+  socket.emit('control-connected', roomId)
 }
-
 
 function displayQr(qrcode) {
   const qrcanvas = document.getElementById('qrcode')
   const ctx = qrcanvas.getContext('2d')
-
   const data = qrcode.modules
   const size = data.length
-
-  qrcanvas.width = qrcanvas.height = size
-
+  qrcanvas.width = qrcanvas.height = size + 2
   const imageData = ctx.createImageData(size,size)
-
   data.forEach((row, rowIndex) => {
     row.forEach((cell, cellIndex) => {
       const index = 4*(rowIndex*size + cellIndex)
       imageData.data[index] = 0
       imageData.data[index+1] = 0
       imageData.data[index+2] = 0
-      imageData.data[index+3] = (!cell)*255
+      imageData.data[index+3] = cell*255
     })
   })
-  ctx.putImageData(imageData, 0, 0)
+  ctx.putImageData(imageData, 1, 1)
 }

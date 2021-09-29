@@ -1,3 +1,6 @@
+goToNext = e => console.log('hi')
+goToPrev = e => console.log('hi')
+
 function loadPresentation(data) {
   console.log('data: ', data)
   const displaySlide = (n) => {
@@ -6,18 +9,11 @@ function loadPresentation(data) {
     else
       document.body.innerHTML = data[n]
 
-    if (updateTransitions) {
-      const next = e => {
-        if (n < data.length-1) displaySlide(n+1)
-      }
-
-      const prev = e => {
-        if (n > 0) displaySlide(n-1)
-      }
-
-      updateTransitions(prev, next)
-    } else {
-      throw new Error('connect interactive part of the js')
+    goToNext = e => {
+      if (n < data.length-1) displaySlide(n+1)
+    }
+    goToPrev = e => {
+      if (n > 0) displaySlide(n-1)
     }
   }
 
@@ -25,5 +21,6 @@ function loadPresentation(data) {
 }
 
 onclick = e => {
-  document.querySelector('main').requestFullscreen()
+  if (document.location.hash === '')
+    document.querySelector('main').requestFullscreen()
 }

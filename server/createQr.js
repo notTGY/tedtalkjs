@@ -1,8 +1,11 @@
 const qr = require('qr.js')
 
-function createQr() {
-  const url = `http://localhost:3000/#${Math.floor(9999*Math.random())}`
-  const qrcode = qr(url, {errorCorrectLevel: 2})
+function createQr(id) {
+  const qrcode = qr(
+    process.env.PORT
+    ?`http://localhost:3000/#${id}`
+    :`http://tedtalkjs.herokuapp.com/#${id}`
+  )
 
   return qrcode
 }
