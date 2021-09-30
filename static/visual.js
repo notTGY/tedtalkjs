@@ -1,22 +1,12 @@
-const slideCounter = document.getElementById('slide-counter')
-const mainContent = document.getElementById('main-content')
-const leftContent = document.getElementById('left-align-content')
-const heading = document.getElementById('heading')
-const imgRow1 = document.getElementById('img-row-1')
-const imgRow2 = document.getElementById('img-row-2')
-const imgWhole = document.getElementById('img-whole')
-const qrcanvas = document.getElementById('qrcode')
+import displayJSON from './complexObject.js'
 
-const displayStandaloneSentence = (sentence) => {
+const displayStandaloneSentence = (nodes, sentence) => {
   const txt = sentence.trim()
-  if (txt.length < 50)
-    mainContent.innerHTML = txt
-  else
-    leftContent.innerHTML = txt
+  nodes.mainContent.innerHTML = txt
 }
 
-const displayText = (text) => {
-  leftContent.innerHTML = text.reduce((acc, e, i) => {
+const displayText = (nodes, text) => {
+  nodes.leftContent.innerHTML = text.reduce((acc, e, i) => {
     if (e[0] === '*') {
       const txt = e.substring(1).trim()
       return acc + `<ul><li>${txt}</li></ul>`
@@ -25,21 +15,22 @@ const displayText = (text) => {
   }, '')
 }
 
-const plotSlide = (slideData, n) => {
-  slideCounter.innerText = n.toString()
-  mainContent.innerHTML = ''
-  leftContent.innerHTML = ''
-  heading.innerHTML = ''
-  imgRow1.hidden = true
-  imgRow2.hidden = true
-  imgWhole.hidden = true
-  qrcanvas.hidden = true
+const plotSlide = (nodes, slideData) => {
+  nodes.mainContent.innerHTML = ''
+  nodes.leftContent.innerHTML = ''
+  nodes.heading.innerHTML = ''
+  nodes.imgRow1.hidden = true
+  nodes.imgRow2.hidden = true
+  nodes.imgWhole.hidden = true
+  nodes.qrcanvas.hidden = true
 
   if (['boolean', 'number', 'string'].includes(typeof slideData))
-    return displayStandaloneSentence(slideData.toString())
+    return displayStandaloneSentence(nodes, slideData.toString())
 
   if (Array.isArray(slideData))
-    return displayText(slideData)
+    return displayText(nodes, slideData)
 
-  return displayJSON(slideData)
+  return displayJSON(nodes, slideData)
 }
+
+export default plotSlide

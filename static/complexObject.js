@@ -1,21 +1,21 @@
-const displayJSON = (json) => {
+const displayJSON = (nodes, json) => {
   if ('author' in json && 'h' in json) {
-    mainContent.innerHTML = 
+    nodes.mainContent.innerHTML = 
       json.author + '<hr>' + `<big><big>${json.h}</big></big>`
     return
   }
   if ('h' in json)
-    heading.innerHTML = `<big><big>${json.h}</big></big>`
+    nodes.heading.innerHTML = `<big><big>${json.h}</big></big>`
 
   if ('img' in json && 'img2' in json) {
     const mode = json.mode ?? 'row'
 
     switch (mode) {
       case 'row':
-        imgRow1.src = json.img
-        imgRow2.src = json.img2
-        imgRow1.hidden = false
-        imgRow2.hidden = false
+        nodes.imgRow1.src = json.img
+        nodes.imgRow2.src = json.img2
+        nodes.imgRow1.hidden = false
+        nodes.imgRow2.hidden = false
         break
     }
     return
@@ -25,12 +25,14 @@ const displayJSON = (json) => {
 
     switch (mode) {
       case 'whole':
-        imgWhole.src = json.img
-        imgWhole.hidden = false
+        nodes.imgWhole.src = json.img
+        nodes.imgWhole.hidden = false
         break
     }
     return
   }
 
-  mainContent.innerText = JSON.stringify(json)
+  nodes.mainContent.innerText = JSON.stringify(json)
 }
+
+export default displayJSON

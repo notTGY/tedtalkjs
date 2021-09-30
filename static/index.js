@@ -1,26 +1,10 @@
-goToNext = e => console.log('hi')
-goToPrev = e => console.log('hi')
+import { DOMAIN, isLocal, roomId } from './params.js'
+import presentationSocket from './presentationSocket.js'
+import controlSocket from './controlSocket.js'
 
-function loadPresentation(data) {
-  console.log('data: ', data)
-  const displaySlide = (n) => {
-    if (plotSlide)
-      plotSlide(data[n], n)
-    else
-      document.body.innerHTML = data[n]
+const socket = io()
 
-    goToNext = e => {
-      if (n < data.length-1) displaySlide(n+1)
-    }
-    goToPrev = e => {
-      if (n > 0) displaySlide(n-1)
-    }
-  }
-
-  displaySlide(0)
-}
-
-onclick = e => {
-  if (document.location.hash === '')
-    document.querySelector('main').requestFullscreen()
-}
+if (roomId)
+  controlSocket(socket, roomId)
+else
+  presentationSocket(socket)
