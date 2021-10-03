@@ -5,26 +5,16 @@ body {
   width: 100vw;
   height: 100vh!important;
   overflow: hidden;
-  cursor: pointer;
 }
 
 main {
-  background: radial-gradient(#aaa, #fff);
+  background: #fff;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
 }
 
 hr {
   width: 90%;
-}
-
-li {
-  font-size: 2.5rem;
-}
-
-ul {
-  margin: 1rem;
 }
 
 *::selection {

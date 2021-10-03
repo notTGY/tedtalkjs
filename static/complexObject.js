@@ -1,38 +1,76 @@
-const displayJSON = (nodes, json) => {
-  if ('author' in json && 'h' in json) {
-    nodes.mainContent.innerHTML = 
-      json.author + '<hr>' + `<big><big>${json.h}</big></big>`
-    return
-  }
-  if ('h' in json)
-    nodes.heading.innerHTML = `<big><big>${json.h}</big></big>`
+const TYPES_TO_CSS = {
+  '-': 'row',
+  '|': 'col',
+  '*': 'whole',
+  '\\': 'diag',
+  '/': 'revdiag',
+}
 
-  if ('img' in json && 'img2' in json) {
-    const mode = json.mode ?? 'row'
+const displayJSON = (slide, json, images) => {
+  let template = ''
+  if ('author' in json && 'h' in json)
+    template += `
+      <section class="center main-content">
+        ${json.author}
+        <hr>
+        <big><big>${json.h}</big></big>
+      </section>
+      `
 
-    switch (mode) {
-      case 'row':
-        nodes.imgRow1.src = json.img
-        nodes.imgRow2.src = json.img2
-        nodes.imgRow1.hidden = false
-        nodes.imgRow2.hidden = false
-        break
-    }
-    return
-  }
-  if ('img' in json) {
-    const mode = json.mode ?? 'whole'
+  if ('text' in json)
+    template += `
+      <h1 class="heading">
+        ${json.text}
+      </h1>
+    `
 
-    switch (mode) {
-      case 'whole':
-        nodes.imgWhole.src = json.img
-        nodes.imgWhole.hidden = false
-        break
-    }
-    return
-  }
+  let type = TYPES_TO_CSS[json.mode ?? '-']
+  if ('img' in json && 'img2' in json)
+    template += ['diag', 'revdiag'].includes(type)
+    ? `
+      <div class="center">
+        <div class="img-${type}">
+          <img
+            src="${images[json.img]}"
+          />
+          <img
+            src="${images[json.img2]}"
+          />
+        </div>
+      </div>
+    `
+    : `
+      <div class="center img-${type}">
+        <img
+          src="${images[json.img]}"
+        />
+        <img
+          src="${images[json.img2]}"
+        />
+      </div>
+    `
 
-  nodes.mainContent.innerText = JSON.stringify(json)
+  type = TYPES_TO_CSS[json.mode ?? '*']
+  if ('img' in json && !('img2' in json))
+    template += ['diag', 'revdiag'].includes(type)
+    ? `
+      <div class="center">
+        <div class="img-${type}">
+          <img
+            src="${images[json.img]}"
+          />
+        </div>
+      </div>
+    `
+    : `
+      <div class="center img-${type}">
+        <img
+          src="${images[json.img]}"
+        />
+      </div>
+    `
+
+  slide.innerHTML = template
 }
 
 export default displayJSON

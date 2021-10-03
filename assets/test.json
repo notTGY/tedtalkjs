@@ -1,26 +1,75 @@
 [
   {
     "author": "notTGY",
-    "h": "size matters"
+    "h": "intro to tedtalkjs"
   },
-  [
-    "reasons to minify",
-    "* load speed",
-    "* code readability",
-    "",
-    "reasons against",
-    "* it is hard"
-  ],
+  "Following slides demonstrate different image layouts",
   {
-    "h": "minified vs excess",
+    "text": "horizontal spacing",
+    "mode": "-",
+    "img": "../assets/einstain.jfif"
+  },
+  {
+    "text": "horizontal spacing",
+    "mode": "-",
     "img": "../assets/einstain.jfif",
     "img2": "../assets/ts.png"
   },
-  [
-    "Javascript is the most powerful language out there"
-  ],
+  {
+    "text": "vertical spacing",
+    "mode": "|",
+    "img": "../assets/einstain.jfif"
+  },
+  {
+    "text": "vertical spacing",
+    "mode": "|",
+    "img": "../assets/einstain.jfif",
+    "img2": "../assets/ts.png"
+  },
+  {
+    "text": "diagonal spacing",
+    "mode": "\\",
+    "img": "../assets/einstain.jfif"
+  },
+  {
+    "text": "diagonal spacing",
+    "mode": "\\",
+    "img": "../assets/einstain.jfif",
+    "img2": "../assets/ts.png"
+  },
+  {
+    "text": "reverse diagonal spacing",
+    "mode": "/",
+    "img": "../assets/einstain.jfif"
+  },
+  {
+    "text": "reverse diagonal spacing",
+    "mode": "/",
+    "img": "../assets/einstain.jfif",
+    "img2": "../assets/ts.png"
+  },
   {
     "img": "../assets/levin.jpg"
   },
-  "qs?"
+  [
+    "what tedtalkjs can do",
+    "* is also unordered lists",
+    "* but no ordered lists, sorry :(",
+    "",
+    "following slides will give you idea of what text formatting can be done with tedtalkjs"
+  ],
+  {
+    "text": "upper text"
+  },
+  "middle text",
+  [
+    "<br><br><br><br><br><br><br><br>",
+    "<center>bottom text<center>"
+  ],
+  [
+    "Some HTML editing:",
+    "<ul><li>carrot</li><li>milk</li><li>eggs</li></ul>",
+    "This means you can always hack into the html and display whatever you want!"
+  ],
+  "end"
 ]
