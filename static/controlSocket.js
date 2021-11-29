@@ -1,4 +1,5 @@
 import { DOMAIN } from './params.js'
+/*
 import {
   loadPresentation,
   prepareImages,
@@ -35,8 +36,10 @@ async function startPresentation(path) {
   }
   return [goNext, goPrev, goN]
 }
+*/
 
 export default function controlSocket(socket, roomId) {
+  /*
   document.querySelector('main').innerHTML = `
     <section id="slides-control">
     </section>
@@ -50,24 +53,25 @@ export default function controlSocket(socket, roomId) {
     </button>
     <div id="qrcode"></div>
   `
+  */
 
 
   let clickTimeout = 0
-  socket.on('control-connected', async () => {
+  socket.on('control-connected', /*async*/ () => {
     socket.emit('presentation-start', `${DOMAIN}/assets/test.json`)
-    const [next, prev, n] = await startPresentation(`${DOMAIN}/assets/test.json`)
+    //const [next, prev, n] = await startPresentation(`${DOMAIN}/assets/test.json`)
 
     const fn = e => {
       if (clickTimeout) {
         clearTimeout(clickTimeout)
         clickTimeout = 0
         socket.emit('go-to-prev')
-        prev()
+        //prev()
       } else {
         clickTimeout = setTimeout(
           e => {
             socket.emit('go-to-next')
-            next()
+            //next()
             clickTimeout = 0
           },
           300
