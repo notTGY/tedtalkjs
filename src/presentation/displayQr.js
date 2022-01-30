@@ -16,3 +16,4 @@ export default function displayQr(qrcode) {
   })
   ctx.putImageData(imageData, 1, 1)
 }
+

@@ -14,3 +14,4 @@ if (document.location.hash !== '') {
 }
 
 export { DOMAIN, isLocal, roomId }
+

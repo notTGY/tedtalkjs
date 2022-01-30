@@ -11,7 +11,7 @@ function socketFlow(socket) {
     socket.emit('qr-created', createQr(roomId), roomId)
   })
 
-  socket.on('control-connected', (roomId) => {
+  socket.on('control-connected', roomId => {
     console.log('control joins room: ' + roomId)
     socket.join(roomId)
     socket.emit('control-connected')
