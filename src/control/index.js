@@ -29,8 +29,8 @@ export default function controlSocket(socket, roomId) {
     socket.emit('go-to-slide', n)
   }
 
-  function textareaCb(item, index) {
-    item.addEventListener('input', e => {
+  function textareaCb(textarea, index) {
+    textarea.addEventListener('input', e => {
       const text = e.target.value
 
       slideData[index] = text
@@ -42,7 +42,7 @@ export default function controlSocket(socket, roomId) {
       sendPres()
     })
 
-    item.addEventListener('focus', e => {
+    textarea.addEventListener('focus', e => {
       curSlide = index
 
       render(slideData, curSlide)
@@ -50,10 +50,10 @@ export default function controlSocket(socket, roomId) {
       goToN(index)
     })
 
-    item.addEventListener('keyup', e => {
+    textarea.addEventListener('keyup', e => {
       const { key } = e
       if (key === 'Backspace' || key === 'Delete') {
-        if (item.value === '') {
+        if (textarea.value === '') {
           slideData.splice(index, 1)
 
           const texts = document.querySelectorAll('textarea')

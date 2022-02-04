@@ -1,3 +1,4 @@
+import './lib/socket.io.min.js'
 import { DOMAIN, isLocal, roomId } from './params.js'
 import presentationSocket from './presentation/index.js'
 import controlSocket from './control/index.js'
