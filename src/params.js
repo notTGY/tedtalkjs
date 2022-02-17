@@ -1,17 +1,24 @@
-let DOMAIN, isLocal, roomId
-if (document.location.origin.indexOf('localhost') !== -1) {
-  DOMAIN = 'http://localhost:3000'
-  isLocal = true
-} else {
-  DOMAIN = 'https://tedtalkjs.herokuapp.com'
-  isLocal = false
-}
+const CTRL = 'ctrl'
+const POLL = 'poll'
+const PRES = 'pres'
 
-if (document.location.hash !== '') {
-  roomId = document.location.hash.substring(1)
-} else {
-  roomId = null
-}
+const { origin, search } = document.location
+const params = new URLSearchParams(search)
 
-export { DOMAIN, isLocal, roomId }
+
+const ctrl = params.get(CTRL)
+const poll = params.get(POLL)
+
+const roomId = ctrl || poll || null
+let mode
+if (ctrl) mode = CTRL
+else if (poll) mode = POLL
+else mode = PRES
+
+
+const DOMAIN = origin.indexOf('localhost') === -1
+  ? 'https://tedtalkjs.herokuapp.com'
+  : 'http://localhost:3000'
+
+export { DOMAIN, roomId, mode, CTRL, POLL, PRES }
 

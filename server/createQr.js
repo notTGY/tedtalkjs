@@ -1,10 +1,12 @@
 const qr = require('qr.js')
 
-function createQr(id) {
+function createQr(id, mode) {
+  const path = `?${mode}=${id}`
+
   const qrcode = qr(
     process.env.PORT
-    ?`http://tedtalkjs.herokuapp.com/#${id}`
-    :`http://localhost:3000/#${id}`
+    ?`https://tedtalkjs.herokuapp.com/${path}`
+    :`http://localhost:3000/${path}`
   )
 
   return qrcode

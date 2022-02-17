@@ -6,9 +6,11 @@ function socketFlow(socket) {
 
   socket.on('create-qr', () => {
     const roomId = '' + 1// + Math.floor(Math.random()*9999)
+    const mode = 'ctrl'
     console.log('presentation joins room: ' + roomId)
     socket.join(roomId)
-    socket.emit('qr-created', createQr(roomId), roomId)
+    const qr = createQr(roomId, mode)
+    socket.emit('qr-created', qr, roomId)
   })
 
   socket.on('control-connected', roomId => {
