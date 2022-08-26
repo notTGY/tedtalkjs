@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "jsxFactory": "happyFramework.dom",
+    "jsxFragmentFactory": "happyFramework.frag"
+  }
+}

@@ -1,6 +1,7 @@
 export default function displayQr(qrcode) {
   const qrcanvas = document.getElementById('qrcode')
   const ctx = qrcanvas.getContext('2d')
+  ctx.imageSmoothingEnabled = false
   const data = qrcode.modules
   const size = data.length
   qrcanvas.width = qrcanvas.height = size + 2

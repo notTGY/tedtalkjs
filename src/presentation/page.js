@@ -20,7 +20,7 @@ export default function render(slideData, n) {
   <style>
     html, body, main, #slide { width: 100%; height: 100%; margin: 0; }
     #center { position: fixed; top: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    #center canvas { width: 150px; height: 150px; z-index: 1; margin-bottom: 70px; }
+    #center canvas { width: 150px; height: 150px; z-index: 1; margin-bottom: 70px; image-rendering: pixelated;}
 
     #slide { display: flex; justify-content: center; }
     #back { position: fixed; top: 50%; left: 50%; transform: translate(calc(-50% - 145px), calc(-50% + 70px)); display: flex; flex-direction: column; align-items: center;}

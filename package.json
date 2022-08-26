@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/notTGY/tedtalkjs#readme",
   "dependencies": {
+    "esbuild": "^0.15.5",
     "express": "^4.17.1",
     "qr.js": "^0.0.0",
     "socket.io": "^4.2.0"
