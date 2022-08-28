@@ -1,43 +1,51 @@
 import happyFramework from './framework.js'
+let rerender
 import useBrowserData from './useBrowserData.js'
-
 const {
-  getPresentation, setPresentation,
+  getPresentationId, setPresentationId,
   getRoomId, setRoomId,
   getStored, setStored,
+  socketHooks,
 } = useBrowserData()
+
+import Landing from './components/Landing.jsx'
 
 const App = () => {
   const roomId = getRoomId()
-  const presentation = getPresentation()
+  const presentationId = getPresentationId()
 
-  if (roomId !== null && presentation === null) {
+  if (roomId !== null && presentationId === null) {
     return (
       <div id="root">
         Joined as a viewer
       </div>
     )
-  } else if (roomId === null && presentation !== null) {
+  } else if (
+    roomId === null && presentationId !== null
+  ) {
     return (
       <div id="root">
         Editing presentation without presenting
       </div>
     )
-  } else if (roomId !== null && presentation !== null) {
+  } else if (
+    roomId !== null && presentationId !== null
+  ) {
     return (
       <div id="root">
         Presenting. You are presenter
       </div>
     )
   } else {
-    return (
-      <div id="root">
-          Landing.
-          CTA to create new presentation.
-          QR code and room id to start presenting.
-      </div>
-    )
+    return Landing({
+        rerender:() => rerender(),
+        LandingContext:{
+          socketHooks,
+        },
+      })
   }
 }
 
-const rerender = happyFramework.init(document.getElementById('root'), App) 
+rerender = happyFramework.init(
+  document.getElementById('root'), App
+)

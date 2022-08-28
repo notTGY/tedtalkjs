@@ -13,12 +13,12 @@ export default function presentationSocket(socket) {
 
   const slide = document.getElementById('slide')
 
-  socket.on('qr-created', (qr, id) => {
+  socket.on('room-created', (qr, id) => {
     console.log(id)
     displayQr(qr)
   })
 
-  socket.on('presentation-start', (data) => {
+  socket.on('data-received', (data) => {
     slideData = data.slideData
     curSlide = data.curSlide
     render()
@@ -29,5 +29,5 @@ export default function presentationSocket(socket) {
     render()
   })
 
-  socket.emit('create-qr')
+  socket.emit('create-room')
 }
