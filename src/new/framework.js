@@ -11,7 +11,9 @@ const init = ($el, fn) => {
 
   const render = () => {
     $el.innerHTML = ''
-    prevJson = El({}, fn(), $el)
+    prevJson = El({
+      $el, elem: $el.nodeName.toLowerCase()
+    }, fn(), $el)
   }
 
   const El = (prev, cur, root) => {

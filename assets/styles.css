@@ -127,3 +127,7 @@ html, body {
   margin-left: 5%;
   margin-right: 5%;
 }
+
+#root textarea {
+  min-height: 160px;
+}

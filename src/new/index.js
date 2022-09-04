@@ -5,44 +5,55 @@ const {
   getPresentationId, setPresentationId,
   getRoomId, setRoomId,
   getStored, setStored,
+  getData, setData,
   socketHooks,
 } = useBrowserData()
 
 import Landing from './components/Landing.jsx'
+import Presentation from './components/Presentation.jsx'
+import Host from './components/Host.jsx'
 
 const App = () => {
   const roomId = getRoomId()
   const presentationId = getPresentationId()
 
-  if (roomId !== null && presentationId === null) {
+  if (presentationId === null && roomId !== null) {
+    const stored = getStored() ?? {rooms:{}}
+    const slides = stored.rooms[roomId] ?? ['']
+    const curSlide = stored.curSlide ?? 0
+    const data = slides[curSlide]
+
     return (
       <div id="root">
-        Joined as a viewer
+        <Presentation data={data} />
       </div>
     )
   } else if (
-    roomId === null && presentationId !== null
+    presentationId === null && roomId === null
   ) {
-    return (
-      <div id="root">
-        Editing presentation without presenting
-      </div>
-    )
-  } else if (
-    roomId !== null && presentationId !== null
-  ) {
-    return (
-      <div id="root">
-        Presenting. You are presenter
-      </div>
-    )
-  } else {
     return Landing({
         rerender:() => rerender(),
-        LandingContext:{
+        LandingContext: {
           socketHooks,
+          setPresentationId,
         },
       })
+  } else if (presentationId !== null) {
+    const isOnline = roomId !== null
+    const data = getData()
+
+    const stored = getStored() ?? {rooms:{}}
+    const curSlide = stored.curSlide ?? 0
+
+    return Host({
+      isOnline,
+      data,
+      HostContext: {
+        socketHooks,
+      },
+      rerender: () => rerender(),
+      curSlide,
+    })
   }
 }
 

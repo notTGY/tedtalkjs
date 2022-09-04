@@ -7,9 +7,20 @@ import Card from './Card.jsx'
 
 let qrcode = null
 
-function CreateButton() {
+function CreateButton(props) {
+  const { LandingContext, rerender } = props
+  const onclick = () => {
+    const randomId = Date.now()
+    LandingContext.setPresentationId(randomId)
+    rerender()
+  }
+
   return (
-    <Button type="pill" color="#45ef45">
+    <Button
+      type="pill"
+      color="#45ef45"
+      onclick={onclick}
+    >
       <div style="display:flex;color:#efe;font-size:1.2rem;align-items:center;">
         <div
           style="border-radius:100%;border:2px solid #efe;width:16px;height:16px;vertical-align:center;margin-right:4px;"
@@ -47,14 +58,23 @@ export default function Landing(props) {
       .onDataReceived(rerender)
   }
 
+
   return (
     <div id="root">
       <Background></Background>
-        <div id="app-container" style="font-family:Arial;color:412B2B;overflow:auto;">
-          <div style="display: flex;justify-content:space-between;">
+        <div
+          id="app-container"
+          style="font-family:Arial;color:412B2B;overflow:auto;"
+        >
+          <div
+            style="display:flex;justify-content:space-between;"
+          >
             <H/>
             <div style="margin:1rem;">
-              <CreateButton/>
+              <CreateButton
+                LandingContext={LandingContext}
+                rerender={rerender}
+              />
             </div>
           </div>
           <Card style="margin-top:1rem;">

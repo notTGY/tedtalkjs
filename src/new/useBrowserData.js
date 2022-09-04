@@ -38,33 +38,53 @@ if (
   roomId = params.get('r')
   presentationId = params.get('p')
 }
+
+if (roomId !== null && presentationId !== null) {
+  socket.emit('control-connected', roomId)
+  const { curSlide } = getStored() ?? { curSlide: 0 }
+  const { ondevice } = getStored() ?? { ondevice: {} }
+  const slideData = ondevice[presentationId]
+  socket.emit(
+    'presentation-start', 
+    { slideData, curSlide }
+  )
+}
+
 const getRoomId = () => roomId
 const setRoomId = (newRoomId) => {
   roomId = newRoomId
-  // update room data
 }
 
 const getPresentationId = () => presentationId
 const setPresentationId = (newPresentationId) => {
   presentationId = newPresentationId
-  // change data to different presentation
 }
 
 let data
 if (presentationId !== null) {
-  const stored = getStored()
+  const stored = getStored() ?? {ondevice: {}}
   if (stored.ondevice) {
-    data = stored.ondevice[presentation]
+    data = stored.ondevice[presentationId]
   } else {
-    // accessing missing presentation.
+    data = ['']
   }
 }
 
 const getData = () => data
 const setData = (newData) => {
+  if (presentationId === null) {
+    throw new Error(
+      `Trying to set data of unexisting presentation`
+    )
+  }
+
   data = newData
-  // update localstorage
-  // update room status
+  const stored = getStored() ?? {ondevice:{}}
+  const oldOndevice = stored.ondevice
+  const changed = {}
+  changed[presentationId] = newData
+  const ondevice = {...oldOndevice, ...changed }
+  setStored({...stored, ondevice })
 }
 
 let createRoomCallback = () => {}
@@ -119,10 +139,47 @@ socket.on('go-to-slide', n => {
   onSlideChangedCallback(n)
 })
 
+const setDataHook = (slideData) => {
+  setData(slideData)
+
+  const stored = getStored() ?? {}
+  const curSlide = stored.curSlide ?? 0
+
+  const newStored = {
+    ...stored, curSlide: data.curSlide
+  }
+
+  setStored(newStored)
+
+  if (roomId !== null) {
+    socket.emit(
+      'presentation-start', 
+      { slideData, curSlide }
+    )
+  }
+}
+
+const setSlideHook = (curSlide) => {
+  const stored = getStored() ?? {}
+  if (stored.curSlide === curSlide) {
+    // do not update unnecessary
+    return false
+  }
+
+  setStored({
+    ...stored, curSlide
+  })
+
+  socket.emit('go-to-slide', curSlide)
+  return true
+}
+
 const socketHooks = {
   createRoom,
   onDataReceived,
   onSlideChanged,
+  setDataHook,
+  setSlideHook,
 }
 
 export default function useBrowserData() {
@@ -133,6 +190,8 @@ export default function useBrowserData() {
     setRoomId,
     getStored,
     setStored,
+    getData,
+    setData,
     socketHooks,
   }
 }

@@ -1,7 +1,9 @@
 import happyFramework from '../framework.js'
 
 export default function Button(props) {
-  const { type, width, height, color } = props
+  const {
+    type, width, height, color, ...rest
+  } = props
 
   const background = 
   `background: linear-gradient(155deg, #0000, #0001), ${color};`
@@ -10,6 +12,6 @@ export default function Button(props) {
     elem: 'button',
     className: `button-${type}`,
     style: `width:${width};height:${height};${background}`,
-    ...props,
+    ...rest,
   }
 }
