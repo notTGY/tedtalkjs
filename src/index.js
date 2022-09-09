@@ -18,10 +18,53 @@ const App = () => {
   const presentationId = getPresentationId()
 
   if (presentationId === null && roomId !== null) {
-    const stored = getStored() ?? {rooms:{}}
-    const slides = stored.rooms[roomId] ?? ['']
-    const curSlide = stored.curSlide ?? 0
+    const isSelect = socketHooks.useStartSelect(
+      (e) => rerender(e)
+    )
+
+    const stored = getStored() ?? {}
+
+    if (isSelect) {
+      const navigate = p => {
+        window.location = `?r=${roomId}&p=${p}`
+      }
+
+      const p = Date.now()
+
+      if (stored.ondevice) {
+        const pres = Object.keys(stored.ondevice)
+        const jsx = pres.map(name => ({
+                elem: 'li',
+                innerText: name,
+                onclick: () => navigate(name)
+              }))
+
+        jsx.push({
+          elem: 'li',
+          innerText: 'new',
+          onclick: () => navigate(p)
+        })
+
+
+        return (
+          <div id="root">
+            <ul>
+            { jsx }
+            </ul>
+          </div>
+        )
+      } else {
+        navigate(p)
+      }
+    }
+
+    let slides = ['']
+    if (stored.rooms && stored.rooms[roomId]) {
+      slides = stored.rooms[roomId]
+    }
+    const curSlide = 0
     const data = slides[curSlide]
+
 
     return (
       <div id="root">
@@ -32,7 +75,7 @@ const App = () => {
     presentationId === null && roomId === null
   ) {
     return Landing({
-        rerender:() => rerender(),
+        rerender:(e) => rerender(e),
         LandingContext: {
           socketHooks,
           setPresentationId,
@@ -51,7 +94,7 @@ const App = () => {
       HostContext: {
         socketHooks,
       },
-      rerender: () => rerender(),
+      rerender: (e) => rerender(e),
       curSlide,
     })
   }

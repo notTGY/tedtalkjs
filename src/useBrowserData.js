@@ -39,8 +39,7 @@ if (
   presentationId = params.get('p')
 }
 
-if (roomId !== null && presentationId !== null) {
-  socket.emit('control-connected', roomId)
+function select(presentationId) {
   const { curSlide } = getStored() ?? { curSlide: 0 }
   const { ondevice } = getStored() ?? { ondevice: {} }
   const slideData = ondevice[presentationId]
@@ -48,6 +47,29 @@ if (roomId !== null && presentationId !== null) {
     'presentation-start', 
     { slideData, curSlide }
   )
+}
+
+socket.on('control-connected', () => {
+  if (presentationId !== null) {
+    return select(presentationId)
+  }
+})
+
+let isSelecting = false
+function useStartSelect(rerender) {
+
+  socket.on('control-connected', () => {
+    if (presentationId !== null) {
+      return select(presentationId)
+    }
+    isSelecting = true
+    rerender()
+  })
+  return isSelecting ? select : null
+}
+
+if (roomId !== null) {
+  socket.emit('control-requested', roomId)
 }
 
 const getRoomId = () => roomId
@@ -180,6 +202,7 @@ const socketHooks = {
   onSlideChanged,
   setDataHook,
   setSlideHook,
+  useStartSelect,
 }
 
 export default function useBrowserData() {

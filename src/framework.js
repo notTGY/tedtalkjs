@@ -9,11 +9,15 @@ function dom(elem, props, ...children) {
 const init = ($el, fn) => {
   let prevJson = {$el, elem: $el.nodeName.toLowerCase()}, tmp
 
-  const render = () => {
-    $el.innerHTML = ''
-    prevJson = El({
-      $el, elem: $el.nodeName.toLowerCase()
-    }, fn(), $el)
+  const render = (soft) => {
+    if (!soft) {
+      $el.innerHTML = ''
+      prevJson = El({
+        $el, elem: $el.nodeName.toLowerCase()
+      }, fn(), $el)
+    } else {
+      prevJson = El(prevJson, fn(), $el)
+    }
   }
 
   const El = (prev, cur, root) => {

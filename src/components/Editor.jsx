@@ -1,10 +1,10 @@
 import happyFramework from '../framework'
 import EditorTextarea from './EditorTextarea.jsx'
 
-function asyncify(fn) {
+function asyncify(fn, ...props) {
   return new Promise((res, rej) => {
     try {
-      fn()
+      fn(...props)
       res()
     } catch(e) {
       rej()
@@ -12,8 +12,8 @@ function asyncify(fn) {
   })
 }
 
-function rerenderThenFocusNthTextarea(rerender, n) {
-  asyncify(rerender).then(() => {
+function rerenderThenFocusNthTextarea(rerender, n, soft=false) {
+  asyncify(rerender, soft).then(() => {
     const textareas = document.querySelectorAll(
       'textarea'
     )
@@ -69,7 +69,7 @@ export default function Editor(props) {
     newData[index] = value
 
     HostContext.socketHooks.setDataHook(newData)
-    rerenderThenFocusNthTextarea(rerender, index)
+    rerenderThenFocusNthTextarea(rerender, index, true)
   }
 
   function addToData(afterIndex) {
@@ -87,7 +87,7 @@ export default function Editor(props) {
       .socketHooks
       .setSlideHook(index)
     if (isUpdated) {
-      rerenderThenFocusNthTextarea(rerender, index)
+      rerenderThenFocusNthTextarea(rerender, index, true)
     }
   }
 

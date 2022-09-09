@@ -10,12 +10,16 @@
   }
   var init = ($el, fn) => {
     let prevJson = { $el, elem: $el.nodeName.toLowerCase() }, tmp;
-    const render = () => {
-      $el.innerHTML = "";
-      prevJson = El({
-        $el,
-        elem: $el.nodeName.toLowerCase()
-      }, fn(), $el);
+    const render = (soft) => {
+      if (!soft) {
+        $el.innerHTML = "";
+        prevJson = El({
+          $el,
+          elem: $el.nodeName.toLowerCase()
+        }, fn(), $el);
+      } else {
+        prevJson = El(prevJson, fn(), $el);
+      }
     };
     const El = (prev, cur, root) => {
       if (Array.isArray(cur))
@@ -101,15 +105,33 @@
     roomId = params.get("r");
     presentationId = params.get("p");
   }
-  if (roomId !== null && presentationId !== null) {
-    socket.emit("control-connected", roomId);
+  function select(presentationId2) {
     const { curSlide } = getStored() ?? { curSlide: 0 };
     const { ondevice } = getStored() ?? { ondevice: {} };
-    const slideData = ondevice[presentationId];
+    const slideData = ondevice[presentationId2];
     socket.emit(
       "presentation-start",
       { slideData, curSlide }
     );
+  }
+  socket.on("control-connected", () => {
+    if (presentationId !== null) {
+      return select(presentationId);
+    }
+  });
+  var isSelecting = false;
+  function useStartSelect(rerender2) {
+    socket.on("control-connected", () => {
+      if (presentationId !== null) {
+        return select(presentationId);
+      }
+      isSelecting = true;
+      rerender2();
+    });
+    return isSelecting ? select : null;
+  }
+  if (roomId !== null) {
+    socket.emit("control-requested", roomId);
   }
   var getRoomId = () => roomId;
   var setRoomId = (newRoomId) => {
@@ -222,7 +244,8 @@
     onDataReceived,
     onSlideChanged,
     setDataHook,
-    setSlideHook
+    setSlideHook,
+    useStartSelect
   };
   function useBrowserData() {
     return {
@@ -341,8 +364,7 @@
     const { LandingContext, rerender: rerender2 } = props;
     const onclick = () => {
       const randomId = Date.now();
-      LandingContext.setPresentationId(randomId);
-      rerender2();
+      window.location = `?r=${randomId}`;
     };
     return /* @__PURE__ */ framework_default.dom(Button, {
       type: "pill",
@@ -451,18 +473,18 @@
   }
 
   // src/components/Editor.jsx
-  function asyncify(fn) {
+  function asyncify(fn, ...props) {
     return new Promise((res, rej) => {
       try {
-        fn();
+        fn(...props);
         res();
       } catch (e) {
         rej();
       }
     });
   }
-  function rerenderThenFocusNthTextarea(rerender2, n) {
-    asyncify(rerender2).then(() => {
+  function rerenderThenFocusNthTextarea(rerender2, n, soft = false) {
+    asyncify(rerender2, soft).then(() => {
       const textareas = document.querySelectorAll(
         "textarea"
       );
@@ -512,7 +534,7 @@
       const newData = cleanData;
       newData[index] = value;
       HostContext.socketHooks.setDataHook(newData);
-      rerenderThenFocusNthTextarea(rerender2, index);
+      rerenderThenFocusNthTextarea(rerender2, index, true);
     }
     function addToData(afterIndex) {
       const newData = cleanData;
@@ -526,7 +548,7 @@
     function goTo(index) {
       const isUpdated = HostContext.socketHooks.setSlideHook(index);
       if (isUpdated) {
-        rerenderThenFocusNthTextarea(rerender2, index);
+        rerenderThenFocusNthTextarea(rerender2, index, true);
       }
     }
     const children = cleanData.reduce(
@@ -609,9 +631,39 @@
     const roomId2 = getRoomId2();
     const presentationId2 = getPresentationId2();
     if (presentationId2 === null && roomId2 !== null) {
-      const stored = getStored2() ?? { rooms: {} };
-      const slides = stored.rooms[roomId2] ?? [""];
-      const curSlide = stored.curSlide ?? 0;
+      const isSelect = socketHooks2.useStartSelect(
+        (e) => rerender(e)
+      );
+      const stored = getStored2() ?? {};
+      if (isSelect) {
+        const navigate = (p2) => {
+          window.location = `?r=${roomId2}&p=${p2}`;
+        };
+        const p = Date.now();
+        if (stored.ondevice) {
+          const pres = Object.keys(stored.ondevice);
+          const jsx = pres.map((name) => ({
+            elem: "li",
+            innerText: name,
+            onclick: () => navigate(name)
+          }));
+          jsx.push({
+            elem: "li",
+            innerText: "new",
+            onclick: () => navigate(p)
+          });
+          return /* @__PURE__ */ framework_default.dom("div", {
+            id: "root"
+          }, /* @__PURE__ */ framework_default.dom("ul", null, jsx));
+        } else {
+          navigate(p);
+        }
+      }
+      let slides = [""];
+      if (stored.rooms && stored.rooms[roomId2]) {
+        slides = stored.rooms[roomId2];
+      }
+      const curSlide = 0;
       const data2 = slides[curSlide];
       return /* @__PURE__ */ framework_default.dom("div", {
         id: "root"
@@ -620,7 +672,7 @@
       }));
     } else if (presentationId2 === null && roomId2 === null) {
       return Landing({
-        rerender: () => rerender(),
+        rerender: (e) => rerender(e),
         LandingContext: {
           socketHooks: socketHooks2,
           setPresentationId: setPresentationId2
@@ -637,7 +689,7 @@
         HostContext: {
           socketHooks: socketHooks2
         },
-        rerender: () => rerender(),
+        rerender: (e) => rerender(e),
         curSlide
       });
     }

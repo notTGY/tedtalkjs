@@ -11,8 +11,7 @@ function CreateButton(props) {
   const { LandingContext, rerender } = props
   const onclick = () => {
     const randomId = Date.now()
-    LandingContext.setPresentationId(randomId)
-    rerender()
+    window.location = `?r=${randomId}`
   }
 
   return (
