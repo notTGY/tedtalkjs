@@ -1,5 +1,5 @@
 (() => {
-  // src/new/framework.js
+  // src/framework.js
   var frag = Symbol();
   function dom(elem, props, ...children) {
     if (elem === frag)
@@ -72,7 +72,7 @@
   };
   var framework_default = { frag, dom, init };
 
-  // src/new/useBrowserData.js
+  // src/useBrowserData.js
   var socket = io();
   var storage = null;
   if (typeof window !== "undefined" && window.localStorage) {
@@ -119,7 +119,7 @@
   var setPresentationId = (newPresentationId) => {
     presentationId = newPresentationId;
   };
-  var data;
+  var data = null;
   if (presentationId !== null) {
     const stored = getStored() ?? { ondevice: {} };
     if (stored.ondevice) {
@@ -238,7 +238,7 @@
     };
   }
 
-  // src/new/components/Background.jsx
+  // src/components/Background.jsx
   function Background(props) {
     return /* @__PURE__ */ framework_default.dom("div", {
       id: "background-container"
@@ -251,7 +251,7 @@
     }));
   }
 
-  // src/new/components/Icon.jsx
+  // src/components/Icon.jsx
   function displayQr(qrcode2) {
     const qrcanvas = document.getElementById("qrcode");
     const ctx = qrcanvas.getContext("2d");
@@ -294,7 +294,7 @@
     };
   }
 
-  // src/new/components/FullCenter.jsx
+  // src/components/FullCenter.jsx
   function FullCenter(props) {
     return {
       className: `full-center ${props.className}`,
@@ -302,7 +302,7 @@
     };
   }
 
-  // src/new/components/Button.jsx
+  // src/components/Button.jsx
   function Button(props) {
     const {
       type,
@@ -320,7 +320,7 @@
     };
   }
 
-  // src/new/components/Card.jsx
+  // src/components/Card.jsx
   function Card(props) {
     const { children, className } = props;
     const cn = `claycard ${className}`;
@@ -335,7 +335,7 @@
     };
   }
 
-  // src/new/components/Landing.jsx
+  // src/components/Landing.jsx
   var qrcode = null;
   function CreateButton(props) {
     const { LandingContext, rerender: rerender2 } = props;
@@ -395,7 +395,7 @@
     }))));
   }
 
-  // src/new/mmd.js
+  // src/mmd.js
   function mmd(src) {
     var h = "";
     function escape(t) {
@@ -417,7 +417,7 @@
     return h;
   }
 
-  // src/new/components/Presentation.jsx
+  // src/components/Presentation.jsx
   function Presentation(props) {
     const { className, data: data2 } = props;
     return {
@@ -433,18 +433,24 @@
     };
   }
 
-  // src/new/components/EditorTextarea.jsx
+  // src/components/EditorTextarea.jsx
   function EditorTextarea(props) {
-    const { data: data2, oninput, onfocus } = props;
+    const { data: data2, oninput, onfocus, ondelete } = props;
     return {
       elem: "textarea",
       value: data2,
+      className: "editor-textarea",
       oninput,
-      onfocus
+      onfocus,
+      onkeyup: (e) => {
+        if (e.target.value === "" && e.key === "Backspace") {
+          ondelete();
+        }
+      }
     };
   }
 
-  // src/new/components/Editor.jsx
+  // src/components/Editor.jsx
   function asyncify(fn) {
     return new Promise((res, rej) => {
       try {
@@ -470,6 +476,7 @@
   function Plus(props) {
     return {
       elem: "button",
+      className: "editor-plus",
       innerText: "+",
       ...props
     };
@@ -482,29 +489,38 @@
       rerender: rerender2
     } = props;
     const cleanData = data2 ?? [];
-    if (cleanData.length === 0 || cleanData[cleanData.length - 1].trim() !== "") {
+    while (cleanData.length < 1) {
       cleanData.push("");
     }
-    function changeData(index, value) {
-      if (value) {
-        const newData = cleanData;
-        newData[index] = value;
-        HostContext.socketHooks.setDataHook(newData);
-        rerenderThenFocusNthTextarea(rerender2, index);
-      } else {
-        const newData = cleanData;
-        newData.splice(index, 1);
-        HostContext.socketHooks.setDataHook(newData);
-        rerenderThenFocusNthTextarea(rerender2, index);
-      }
-    }
-    function addToData(beforeIndex) {
+    function deleteData(index) {
       const newData = cleanData;
-      newData.splice(beforeIndex, 0, "");
+      newData.splice(index, 1);
+      while (cleanData.length < 1) {
+        cleanData.push("");
+      }
       HostContext.socketHooks.setDataHook(newData);
       rerenderThenFocusNthTextarea(
         rerender2,
-        beforeIndex
+        index >= newData.length ? newData.length - 1 : index
+      );
+    }
+    function changeData(index, value) {
+      if (!value) {
+        deleteData(index);
+        return;
+      }
+      const newData = cleanData;
+      newData[index] = value;
+      HostContext.socketHooks.setDataHook(newData);
+      rerenderThenFocusNthTextarea(rerender2, index);
+    }
+    function addToData(afterIndex) {
+      const newData = cleanData;
+      newData.splice(afterIndex + 1, 0, "");
+      HostContext.socketHooks.setDataHook(newData);
+      rerenderThenFocusNthTextarea(
+        rerender2,
+        afterIndex + 1
       );
     }
     function goTo(index) {
@@ -518,18 +534,16 @@
         const textarea = EditorTextarea({
           data: slide,
           oninput: (e) => changeData(index, e.target.value),
+          ondelete: (e) => deleteData(index),
           onfocus: () => goTo(index)
         });
-        if (index > 0) {
-          return [
-            ...children2,
-            /* @__PURE__ */ framework_default.dom(Plus, {
-              onclick: () => addToData(index)
-            }),
-            textarea
-          ];
-        }
-        return [...children2, textarea];
+        return [
+          ...children2,
+          textarea,
+          /* @__PURE__ */ framework_default.dom(Plus, {
+            onclick: () => addToData(index)
+          })
+        ];
       },
       []
     );
@@ -542,7 +556,7 @@
     return slidesJsx;
   }
 
-  // src/new/components/Host.jsx
+  // src/components/Host.jsx
   function Host(props) {
     const {
       isOnline,
@@ -554,7 +568,7 @@
     document.body.onresize = rerender2;
     const width = document.body.offsetWidth;
     const PresentationJsx = /* @__PURE__ */ framework_default.dom(Presentation, {
-      data: data2[curSlide]
+      data: data2 ? data2[curSlide] : ""
     });
     const EditorJsx = /* @__PURE__ */ framework_default.dom(framework_default.frag, null, isOnline ? "Presenting. You are presenter" : "Editing presentation without presenting", /* @__PURE__ */ framework_default.dom(Editor, {
       HostContext,
@@ -568,17 +582,17 @@
         style: "width:100%;display:flex;justify-content:center;",
         children: [
           /* @__PURE__ */ framework_default.dom("div", {
-            style: "overflow:auto;width:320px;"
+            style: "overflow:auto;width:50%;"
           }, EditorJsx),
           /* @__PURE__ */ framework_default.dom("div", {
-            style: "overflow:auto;width:320px;border:1px solid #ccc;"
+            style: "overflow:auto;width:50%;border:1px solid #ccc;"
           }, PresentationJsx)
         ]
       };
     }
   }
 
-  // src/new/index.js
+  // src/index.js
   var rerender;
   var {
     getPresentationId: getPresentationId2,

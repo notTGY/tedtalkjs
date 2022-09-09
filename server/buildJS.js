@@ -1,9 +1,9 @@
 const {build} = require('esbuild')
 
 build({
-  entryPoints: ['src/new/index.js'],
+  entryPoints: ['src/index.js'],
   bundle: true,
-  minify: true,
+  minify: false,
   outfile: 'server/cache.js',
   logLevel: 'info',
   loader: { ".js": "jsx" },

@@ -11,7 +11,7 @@ export default function Host(props) {
 
   const width = document.body.offsetWidth
   const PresentationJsx = (
-    <Presentation data={data[curSlide]}/>
+    <Presentation data={data ? data[curSlide] : ''}/>
   )
 
   const EditorJsx = (
@@ -34,10 +34,10 @@ export default function Host(props) {
       id: 'root',
       style: 'width:100%;display:flex;justify-content:center;',
       children: [
-        <div style="overflow:auto;width:320px;">
+        <div style="overflow:auto;width:50%;">
           {EditorJsx}
         </div>,
-        <div style="overflow:auto;width:320px;border:1px solid #ccc;">
+        <div style="overflow:auto;width:50%;border:1px solid #ccc;">
           {PresentationJsx}
         </div>
       ]

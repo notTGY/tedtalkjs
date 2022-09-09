@@ -128,6 +128,30 @@ html, body {
   margin-right: 5%;
 }
 
-#root textarea {
+
+.editor-textarea {
+  background: #ffbcaf;
+  color: #000;
+  font-size: 16px;
+  line-height: 18px;
+  border: 2px solid transparent;
   min-height: 160px;
+  height: fit-content;
+  resize: vertical;
+  overflow: auto;
+}
+.editor-textarea:focus {
+  outline: none;
+  border: 2px solid #ff8a80;
+}
+
+.editor-plus {
+  background: #c85a54;
+  color: #ffbcaf;
+  outline: none;
+  border: 2px solid transparent;
+}
+.editor-plus:focus {
+  outline: none;
+  border: 2px solid #ff8a80;
 }

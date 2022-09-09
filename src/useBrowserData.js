@@ -60,7 +60,7 @@ const setPresentationId = (newPresentationId) => {
   presentationId = newPresentationId
 }
 
-let data
+let data = null
 if (presentationId !== null) {
   const stored = getStored() ?? {ondevice: {}}
   if (stored.ondevice) {

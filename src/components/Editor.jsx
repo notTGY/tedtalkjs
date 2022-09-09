@@ -28,6 +28,7 @@ function rerenderThenFocusNthTextarea(rerender, n) {
 function Plus(props) {
   return ({
     elem: 'button',
+    className: 'editor-plus',
     innerText: '+',
     ...props
   })
@@ -38,36 +39,46 @@ export default function Editor(props) {
     HostContext, data, className, rerender
   } = props
   const cleanData = data ?? []
-  if (
-    cleanData.length === 0 ||
-    cleanData[cleanData.length - 1].trim() !== ''
-  ) {
+  while(cleanData.length < 1) {
     cleanData.push('')
   }
 
-  function changeData(index, value) {
-    if (value) {
-      const newData = cleanData
-      newData[index] = value
-
-      HostContext.socketHooks.setDataHook(newData)
-      rerenderThenFocusNthTextarea(rerender, index)
-    } else {
-      const newData = cleanData
-      newData.splice(index, 1)
-
-      HostContext.socketHooks.setDataHook(newData)
-      rerenderThenFocusNthTextarea(rerender, index)
-    }
-  }
-
-  function addToData(beforeIndex) {
+  function deleteData(index) {
     const newData = cleanData
-    newData.splice(beforeIndex, 0, '')
+    newData.splice(index, 1)
+
+    while(cleanData.length < 1) {
+      cleanData.push('')
+    }
 
     HostContext.socketHooks.setDataHook(newData)
     rerenderThenFocusNthTextarea(
-      rerender, beforeIndex
+      rerender,
+      index >= newData.length
+        ? newData.length - 1
+        : index
+    )
+  }
+
+  function changeData(index, value) {
+    if (!value) {
+      deleteData(index)
+      return
+    }
+    const newData = cleanData
+    newData[index] = value
+
+    HostContext.socketHooks.setDataHook(newData)
+    rerenderThenFocusNthTextarea(rerender, index)
+  }
+
+  function addToData(afterIndex) {
+    const newData = cleanData
+    newData.splice(afterIndex + 1, 0, '')
+
+    HostContext.socketHooks.setDataHook(newData)
+    rerenderThenFocusNthTextarea(
+      rerender, afterIndex + 1
     )
   }
 
@@ -85,17 +96,15 @@ export default function Editor(props) {
       const textarea = EditorTextarea({
         data: slide,
         oninput:e => changeData(index, e.target.value),
+        ondelete: e => deleteData(index),
         onfocus:() => goTo(index),
       })
 
-      if (index > 0) {
-        return [
-          ...children,
-          <Plus onclick={() => addToData(index)}/>,
-          textarea,
-        ]
-      }
-      return [...children, textarea]
+      return [
+        ...children,
+        textarea,
+        <Plus onclick={() => addToData(index)}/>,
+      ]
     },
     []
   )

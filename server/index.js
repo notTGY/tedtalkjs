@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
   )
 })
 
-app.get('/new/index.js', (req, res) => {
+app.get('/index.js', (req, res) => {
   res.sendFile(
     resolve(`${__dirname}/../server/cache.js`)
   )
